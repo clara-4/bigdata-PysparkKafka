@@ -1,29 +1,35 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import split, col
+from pyspark.sql.functions import col, from_json
+import json
+from pyspark.sql.types import StructType, StructField, StringType, FloatType
 
 # Membuat sesi Spark
 spark = SparkSession.builder \
-    .appName("KafkaSensorConsumer") \
+    .appName("KafkaPySparkConsumer") \
     .getOrCreate()
 
-# Membaca data dari topik Kafka
-sensor_data = spark \
-    .readStream \
+# Membaca data dari Kafka
+df = spark.readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "localhost:9092") \
     .option("subscribe", "sensor-suhu") \
     .load()
 
-# Mengubah data menjadi format yang mudah dibaca
-sensor_df = sensor_data.selectExpr("CAST(value AS STRING)")
-sensor_df = sensor_df.withColumn("sensor_id", split(sensor_df["value"], ",")[0]) \
-                     .withColumn("temperature", split(sensor_df["value"], ",")[1].cast("integer"))
+# Skema untuk data JSON
+schema = StructType([
+    StructField("sensor_id", StringType(), True),
+    StructField("suhu", FloatType(), True)
+])
 
-# Filter suhu yang melebihi 80°C
-filtered_df = sensor_df.filter(col("temperature") > 80)
+# Mendekode dan memproses data JSON
+value_df = df.selectExpr("CAST(value AS STRING)")
+json_df = value_df.select(from_json(col("value"), schema).alias("data")).select("data.*")
 
-# Menampilkan hasil
-query = filtered_df.writeStream \
+# Filter suhu yang lebih dari 80°C
+alert_df = json_df.filter(col("suhu") > 80)
+
+# Menampilkan data suhu yang perlu diwaspadai
+query = alert_df.writeStream \
     .outputMode("append") \
     .format("console") \
     .start()

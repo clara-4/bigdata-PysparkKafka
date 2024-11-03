@@ -1,23 +1,20 @@
+from kafka import KafkaProducer
+import json
 import time
 import random
-from confluent_kafka import Producer
 
-# Konfigurasi Kafka
-conf = {
-    'bootstrap.servers': 'localhost:9092'
-}
-producer = Producer(conf)
+producer = KafkaProducer(
+    bootstrap_servers='localhost:9092',
+    value_serializer=lambda v: json.dumps(v).encode('utf-8')
+)
 
-# Fungsi untuk mengirim data
-def send_temperature_data():
-    sensor_ids = ['S1', 'S2', 'S3']
-    while True:
-        for sensor_id in sensor_ids:
-            temperature = random.randint(60, 100)  # Suhu acak antara 60 dan 100
-            data = f"{sensor_id},{temperature}"
-            producer.produce('sensor-suhu', value=data)
-            print(f"Data dikirim: {data}")
-        producer.flush()
-        time.sleep(1)  # Kirim setiap detik
+sensors = ['S1', 'S2', 'S3']
 
-send_temperature_data()
+while True:
+    sensor_data = {
+        'sensor_id': random.choice(sensors),
+        'suhu': random.uniform(60, 100)  # Simulasikan suhu antara 60°C dan 100°C
+    }
+    producer.send('sensor-suhu', sensor_data)
+    print(f"Mengirim: {sensor_data}")
+    time.sleep(1)  # Kirim data setiap detik
