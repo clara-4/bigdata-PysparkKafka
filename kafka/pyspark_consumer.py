@@ -31,8 +31,17 @@ sensor_data = sensor_data.select("data.sensor_id", "data.temperature")
 # Filter temperatures above 80°C
 filtered_data = sensor_data.filter(sensor_data.temperature > 80)
 
+# Create a DataFrame for additional information about high temperature
+high_temp_info = spark.createDataFrame(
+    [("Suhu terlalu tinggi",)],
+    ["Keterangan"]
+)
+
+# Cross join filtered data with high temperature info to add Keterangan
+enriched_data = filtered_data.crossJoin(high_temp_info)
+
 # Display results to console with additional processing information
-query = filtered_data.writeStream \
+query = enriched_data.writeStream \
     .outputMode("append") \
     .format("console") \
     .option("truncate", "false") \
