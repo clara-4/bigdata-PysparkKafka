@@ -22,7 +22,7 @@
   
 ## Langkah Pengerjaan
 Sebelum menjalankan program dilakukan langkah persiapan atau setup docker kafka terlebih dahulu. Berikut merupakan langkah untuk melakukan setup.
-1. Pertama buat file `docker-compose.yml` yang berisi [code ini][https://github.com/clara-4/bigdata-PysparkKafka/blob/master/docker-compose.yml].
+1. Pertama buat file `docker-compose.yml` yang berisi [code ini](https://github.com/clara-4/bigdata-PysparkKafka/blob/master/docker-compose.yml).
 2. Setelah itu jalankan command `sudo docker compose -f docker-compose.yml up -d` pada terminal anda. Hasilnya akan muncul seperti ini.
 ![WhatsApp Image 2024-11-04 at 13 51 26_3fe6e2ea](https://github.com/user-attachments/assets/0fdcb49f-2503-4d0d-9b6b-d2b7f088b516)
 4. Setelah itu jalankan kafka dengan menambahkan topic menggunakan command ```docker exec -it kafka kafka-topics.sh --create --topic sensor-suhu --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1```. Hasil dari command ini akan seperti ini :
@@ -42,7 +42,7 @@ Setelah berhasil menjalankan docker, kita masih memerlukan setup lagi untuk menj
 6. Memasang environment python3 dengan `python3 -m venv venv` dan mengaktifkannya dengan `source venv/bin/activate`
 7. Didalam environtment python lakukan instalasi pyspark dengan `pip install pyspark` dan kafka-python dengan `pip install kafka-python`
 
-Setelah melakukan setup, kita dapat membuat file [produser.py][https://github.com/clara-4/bigdata-PysparkKafka/blob/master/kafka/temperature_producer.py] dan [consumer.py][https://github.com/clara-4/bigdata-PysparkKafka/blob/master/kafka/pyspark_consumer.py]. Kita dapat menjalankan kedua file tersebut pada terminal yang berbeda di dalam environment python dengan command `python3 produser.py` dan `python3 consumer.py`. Setelah dijalankan maka akan muncul output seperti ini :
+Setelah melakukan setup, kita dapat membuat file [produser.py](https://github.com/clara-4/bigdata-PysparkKafka/blob/master/kafka/temperature_producer.py) dan [consumer.py](https://github.com/clara-4/bigdata-PysparkKafka/blob/master/kafka/pyspark_consumer.py). Kita dapat menjalankan kedua file tersebut pada terminal yang berbeda di dalam environment python dengan command `python3 produser.py` dan `python3 consumer.py`. Setelah dijalankan maka akan muncul output seperti ini :
 
 **File Produser**
 
